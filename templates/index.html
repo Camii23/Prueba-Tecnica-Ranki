@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Dashboard SEO</title>
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+        .bg-color1 { background-color: #0c172b; }
+        .bg-color2 { background-color: #414e60; }
+        .bg-color3 { background-color: #898d95; }
+        .bg-color4 { background-color: #cfccd5; }
+        .bg-color5 { background-color: #f9f9f9; }
+        .text-color1 { color: #0c172b; }
+        .text-color2 { color: #414e60; }
+        .text-color3 { color: #898d95; }
+        .text-color4 { color: #cfccd5; }
+        .text-color5 { color: #f9f9f9; }
+    </style>
+</head>
+<body class="bg-color5">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header Section -->
+        <header class="bg-color1 text-color5 p-4 shadow">
+            <div class="container mx-auto flex justify-between items-center">
+                <h1 class="text-2xl font-bold">Dashboard de Keywords SEO</h1>
+                <div class="flex items-center">
+                    <input type="text" id="search-input" placeholder="Buscar..." class="bg-color2 text-color5 rounded p-2 mr-4">
+                    <button onclick="searchKeywords()" class="bg-color3 text-color5 p-2 rounded">Buscar</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sidebar and Content Section -->
+        <div class="flex flex-1">
+            <!-- Sidebar -->
+            <aside class="w-64 bg-color2 text-color5">
+                <nav class="mt-10">
+                    <ul>
+                        <li class="p-2 hover:bg-color3"><a href="#">Dashboard</a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="flex-1 p-6">
+                <div class="container mx-auto">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                        <!-- Summary Cards -->
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <h2 class="text-xl font-semibold text-color1">Resumen</h2>
+                            <p>Total de keywords: <span id="total-keywords">0</span></p>
+                            <p>Volumen de búsqueda total: <span id="total-volume">0</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Keywords Table -->
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <table class="min-w-full text-center">
+                            <thead>
+                                <tr>
+                                    <th class="py-2 px-4 border-b text-color1">Keyword</th>
+                                    <th class="py-2 px-4 border-b text-color1">Volumen de Búsqueda</th>
+                                </tr>
+                            </thead>
+                            <tbody id="keywords-table">
+                                <!-- Las filas se llenarán con JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        async function fetchKeywords() {
+            const response = await fetch('/api/keywords');
+            const keywords = await response.json();
+
+            // Actualizar el resumen
+            document.getElementById('total-keywords').innerText = keywords.length;
+            const totalVolume = keywords.reduce((sum, keyword) => sum + keyword.search_volume, 0);
+            document.getElementById('total-volume').innerText = totalVolume;
+
+            // Llenar la tabla
+            const tableBody = document.getElementById('keywords-table');
+            tableBody.innerHTML = ''; // Limpiar el contenido de la tabla antes de llenarla
+            keywords.forEach(keyword => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="py-2 px-4 border-b text-color2">${keyword.keyword}</td>
+                    <td class="py-2 px-4 border-b text-color2">${keyword.search_volume}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function searchKeywords() {
+            const input = document.getElementById('search-input').value.toLowerCase();
+            const rows = document.getElementById('keywords-table').getElementsByTagName('tr');
+            if (input === '') {
+                // Recargar todos los datos si el campo de búsqueda está vacío
+                fetchKeywords();
+            } else {
+                for (let i = 0; i < rows.length; i++) {
+                    const keyword = rows[i].getElementsByTagName('td')[0].textContent.toLowerCase();
+                    if (keyword.includes(input)) {
+                        rows[i].style.display = '';
+                    } else {
+                        rows[i].style.display = 'none';
+                    }
+                }
+            }
+        }
+
+        // Función para obtener los datos
+        fetchKeywords();
+    </script>
+</body>
+</html>
