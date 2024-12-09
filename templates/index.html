@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Dashboard SEO</title>
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+        .bg-color1 { background-color: #0c172b; }
+        .bg-color2 { background-color: #414e60; }
+        .bg-color3 { background-color: #898d95; }
+        .bg-color4 { background-color: #cfccd5; }
+        .bg-color5 { background-color: #f9f9f9; }
+        .text-color1 { color: #0c172b; }
+        .text-color2 { color: #414e60; }
+        .text-color3 { color: #898d95; }
+        .text-color4 { color: #cfccd5; }
+        .text-color5 { color: #f9f9f9; }
+    </style>
+</head>
+<body class="bg-color5">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-color1 text-color5 p-4 shadow">
+            <div class="container mx-auto flex justify-between items-center">
+                <h1 class="text-2xl font-bold">Dashboard de Keywords SEO</h1> 
+            </div>
+        </header>
+
+        <!-- Barra lateral - Sección de contenido -->
+        <div class="flex flex-1">
+            <!-- B. lateral -->
+             <aside class="w-64 bg-color2 text-color5">
+                <nav class="mt-10">
+                    <ul>
+                        <li class="p-2 hover:bg-color3"><a href="#">Dashboard</a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- Contenido -->
+            <main class="flex-1 p-6">
+                <div class="container mx-auto">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                        <!-- Card -->
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <h2 class="text-xl font-semibold text-color1">Resumen</h2>
+                            <p>Total de keywords: <span id="total-keywords">0</span></p>
+                            <p>Volumen de búsqueda total: <span id="total-volume">0</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Tabla -->
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <table class="min-w-full text-center">
+                            <thead>
+                                <tr>
+                                    <th class="py-2 px-4 border-b text-color1">Keyword</th>
+                                    <th class="py-2 px-4 border-b text-color1">Volumen de Búsqueda</th>
+                                </tr>
+                            </thead>
+                            <tbody id="keywords-table">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Función para cargar los datos de la API
+        async function loadKeywords() {
+            try {
+                const response = await fetch('/api/keywords');
+                const keywords = await response.json();
+            
+                // Verifica si se están recibiendo los datos correctamente
+                console.log('Datos de keywords:', keywords);
+    
+                // Actualizar la tarjeta con el total de keywords y volumen
+                const totalKeywords = keywords.length;
+                const totalVolume = keywords.reduce((sum, keyword) => sum + keyword.search_volume, 0);
+    
+                document.getElementById('total-keywords').textContent = totalKeywords;
+                document.getElementById('total-volume').textContent = totalVolume;
+    
+                // Mostrar los datos en la tabla
+                const tableBody = document.getElementById('keywords-table');
+                tableBody.innerHTML = ''; // Limpiar la tabla antes de agregar nuevos datos
+    
+                keywords.forEach(keyword => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="py-2 px-4 border-b">${keyword.keyword}</td>
+                        <td class="py-2 px-4 border-b">${keyword.search_volume}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error cargando los keywords:', error);
+            }
+        }
+    
+        // Cargar los datos al cargar la página
+        window.onload = loadKeywords;
+    </script>
+</body>
+</html>
