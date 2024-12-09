@@ -27,7 +27,11 @@
         <!-- Header -->
         <header class="bg-color1 text-color5 p-4 shadow">
             <div class="container mx-auto flex justify-between items-center">
-                <h1 class="text-2xl font-bold">Dashboard de Keywords SEO</h1> 
+                <h1 class="text-2xl font-bold">Dashboard de Keywords SEO</h1>
+                <div class="flex items-center">
+                    <input type="text" id="search-input" placeholder="Buscar..." class="bg-color2 text-color5 rounded p-2 mr-4">
+                    <button onclick="searchKeywords()" class="bg-color3 text-color5 p-2 rounded">Buscar</button>
+                </div> 
             </div>
         </header>
 
@@ -104,6 +108,24 @@
                 });
             } catch (error) {
                 console.error('Error cargando los keywords:', error);
+            }
+        }
+
+        function searchKeywords() {
+            const input = document.getElementById('search-input').value.toLowerCase();
+            const rows = document.getElementById('keywords-table').getElementsByTagName('tr');
+            if (input === '') {
+                // Recargar todos los datos si el campo de búsqueda está vacío
+                fetchKeywords();
+            } else {
+                for (let i = 0; i < rows.length; i++) {
+                    const keyword = rows[i].getElementsByTagName('td')[0].textContent.toLowerCase();
+                    if (keyword.includes(input)) {
+                        rows[i].style.display = '';
+                    } else {
+                        rows[i].style.display = 'none';
+                    }
+                }
             }
         }
     
