@@ -32,7 +32,7 @@ def corregir_json(archivo_entrada, archivo_salida):
     except Exception as e:
         print(f"Error al procesar el archivo JSON: {e}")
 
-# Uso del script
-archivo_entrada = "data.json"  # Reemplaza con tu archivo
+
+archivo_entrada = "data.json"  
 archivo_salida = "archivo_corregido.json"
 corregir_json(archivo_entrada, archivo_salida)
